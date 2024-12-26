@@ -9,3 +9,8 @@ export interface UpdateAdmin {
     email?: string;
     password?: string;
 }
+
+export interface AdminLogin {
+    email: string;
+    password: string;
+}

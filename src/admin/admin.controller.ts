@@ -8,13 +8,18 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { Admin, UpdateAdmin } from 'src/interfaces/admin/admin.interface';
+import { Admin, AdminLogin, UpdateAdmin } from 'src/interfaces/admin/admin.interface';
 import { AdminService } from './admin.service';
 import { ObjectIdValidationPipe } from 'src/common/pipes/object-id-validation/object-id-validation.pipe';
+import { JwtStrategy } from './jwt.strategy';
+import * as bcrypt from 'bcryptjs';
 
 @Controller('admin')
 export class AdminController {
-  constructor(private adminService: AdminService) {}
+  constructor(
+    private adminService: AdminService ,
+    private jwtService: JwtStrategy,
+  ) {}
 
   @Post()
   async createAdmin(@Body() admin: Admin) {
@@ -32,6 +37,22 @@ export class AdminController {
     }
   }
 
+  @Post('login')
+  async login(@Body() admin: AdminLogin) {
+      const adminLogin = await this.adminService.isExistAdmin(admin.email);
+      if (!adminLogin) {
+        return { adminLogin };
+      }
+      const isPasswordValid = await bcrypt.compare(admin.password, adminLogin.password);      
+      if (!isPasswordValid) {
+        throw new HttpException('Invalid credentials', 40);
+      }
+  
+      const payload = { sub: adminLogin._id, email: adminLogin.email };
+      const token =  await this.jwtService.validate(payload);
+  
+      return { data: token };
+  }
   @Get(':id')
   async getAdmin(@Param('id', ObjectIdValidationPipe) id: string) {
     try {        
