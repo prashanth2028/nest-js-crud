@@ -4,8 +4,9 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { AdminModule } from './admin/admin.module';
 
-const ApplicationModule = [UsersModule];
+const ApplicationModule = [UsersModule , AdminModule];
 @Module({
   imports: [
     ConfigModule.forRoot({
