@@ -10,10 +10,12 @@ import {
   Query,
   Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { updateUser, User } from 'src/interfaces/user/user.interface';
 import { ObjectIdValidationPipe } from 'src/common/pipes/object-id-validation/object-id-validation.pipe';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
 export class UsersController {
@@ -28,6 +30,7 @@ export class UsersController {
 
   constructor(private readonly usersService: UsersService) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Get()
   async findAll(
     @Query('role') role?: 'intern' | 'student' | 'professor',
@@ -44,6 +47,7 @@ export class UsersController {
     }
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   async findOne(
     @Param('id', ObjectIdValidationPipe) id: string,
@@ -61,6 +65,7 @@ export class UsersController {
     }
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Post()
   async create(@Body() user: User) {
     try {
@@ -76,6 +81,7 @@ export class UsersController {
     }
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
   async update(
     @Param('id', ObjectIdValidationPipe) id: string,
@@ -94,6 +100,7 @@ export class UsersController {
     }
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
   async delete(
     @Param('id') id: string,
